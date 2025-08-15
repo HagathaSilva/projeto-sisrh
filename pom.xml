@@ -7,6 +7,14 @@
 	<version>1.0.0-Final</version>
 	<packaging>war</packaging>
 	<dependencies>
+	
+		<!-- JaxWS -->
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>2.3.5</version>
+		</dependency>
+
 
 		<!-- Servlet Api -->
 		<dependency>
