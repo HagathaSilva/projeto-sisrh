@@ -33,4 +33,30 @@ public class ServicoEmpregado {
 		}
 		return empregados;
 	}
+	
+	@WebMethod(action = "listarAtivos")
+	public Empregados listarAtivos() throws Exception {
+		Autenticador.autenticarUsuarioSenha(context);
+		
+		Empregados empregados = new Empregados();
+		
+		List<Empregado> lista = Banco.listarEmpregados(true);
+		for (Empregado emp : lista) {
+			empregados.getEmpregados().add(emp);
+		}
+		return empregados;
+	}
+	
+	@WebMethod(action = "listarInativos")
+	public Empregados listarInativos() throws Exception {
+		Autenticador.autenticarUsuarioSenha(context);
+		
+		Empregados empregados = new Empregados();
+		
+		List<Empregado> lista = Banco.listarEmpregados(false);
+		for (Empregado emp : lista) {
+			empregados.getEmpregados().add(emp);
+		}
+		return empregados;
+	}
 }

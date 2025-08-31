@@ -36,12 +36,12 @@ public class Banco {
 	static private void criarConexaoBanco() {
 		try {
 			conn = DriverManager.getConnection("jdbc:hsqldb:file:C:\\workspace\\sisrh_db\\rh_db", "SA", "");
-			System.out.println("Conexão ao banco BANCO_SISRH.........[OK]");
+			System.out.println("Conexï¿½o ao banco BANCO_SISRH.........[OK]");
 		} catch (SQLException e) {
-			System.out.println("Conexão ao banco BANCO_SISRH.........[NOK]");
+			System.out.println("Conexï¿½o ao banco BANCO_SISRH.........[NOK]");
 			if (e.getMessage().contains("lockFile")) {
 				JOptionPane.showMessageDialog(null,
-						"O banco está bloqueado \n porque o Tomcat não liberou a conexão. REINICIE O TOMCAT");
+						"O banco estï¿½ bloqueado \n porque o Tomcat nï¿½o liberou a conexï¿½o. REINICIE O TOMCAT");
 
 			} else {
 				e.printStackTrace();
@@ -65,7 +65,29 @@ public class Banco {
 	public static List<Empregado> listarEmpregados() throws Exception {
 		List<Empregado> lista = new ArrayList<Empregado>();
 		Connection conn = Banco.getConexao();
-		String sql = "SELECT * FROM Empregado";
+		String sql = "SELECT * FROM Empregado ORDER BY nome ASC";
+		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		ResultSet rs = prepStmt.executeQuery();
+		while (rs.next()) {
+			String matricula = rs.getString("matricula");
+			String nome = rs.getString("nome");
+			Date admissao = rs.getDate("admissao");
+			Date desligamento = rs.getDate("desligamento");
+			Double salario = rs.getDouble("salario");
+			Empregado emp = new Empregado(matricula, nome, admissao, desligamento, salario);
+			lista.add(emp);
+		}
+		rs.close();
+		prepStmt.close();
+		return lista;
+	}
+
+	public static List<Empregado> listarEmpregados(boolean ativos) throws Exception {
+		List<Empregado> lista = new ArrayList<Empregado>();
+		Connection conn = Banco.getConexao();
+		String sql = "SELECT * FROM Empregado "
+				+ (ativos ? "WHERE desligamento IS NULL " : "WHERE desligamento IS NOT NULL ")
+				+ "ORDER BY nome ASC";
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		ResultSet rs = prepStmt.executeQuery();
 		while (rs.next()) {
@@ -119,6 +141,37 @@ public class Banco {
 		rs.close();
 		prepStmt.close();
 		return lista;
+	}
+	
+	public static List<Solicitacao> listarSolicitacoes(String usuario) throws Exception {
+	    List<Solicitacao> lista = new ArrayList<Solicitacao>();
+	    Connection conn = Banco.getConexao();
+
+	    String sql =
+	        "SELECT s.id, s.data, s.descricao, s.situacao, s.matricula " +
+	        "  FROM Solicitacao AS s " +
+	        "  INNER JOIN Empregado AS e ON s.matricula = e.matricula " +
+	        "  INNER JOIN Usuario   AS u ON e.matricula = u.matricula " +
+	        " WHERE u.nome = ? " +
+	        " ORDER BY s.data DESC, s.id DESC";
+
+	    PreparedStatement prepStmt = conn.prepareStatement(sql);
+	    prepStmt.setString(1, usuario);              
+	    ResultSet rs = prepStmt.executeQuery();
+
+	    while (rs.next()) {
+	        Integer id        = rs.getInt("id");
+	        Date data         = rs.getDate("data");
+	        String descricao  = rs.getString("descricao");
+	        Integer situacao  = rs.getInt("situacao");
+	        String matricula  = rs.getString("matricula");
+
+	        Solicitacao solicitacao = new Solicitacao(id, data, descricao, situacao, matricula);
+	        lista.add(solicitacao);
+	    }
+	    rs.close();
+	    prepStmt.close();
+	    return lista;
 	}
 	
 	// ---------------------- CONSULTAS ----------------------
@@ -183,7 +236,6 @@ public class Banco {
 		return solicitacao;
 	}
 	
-	
 	public static int idSolicitacao() throws SQLException {
 		Integer id = null;		
 		Connection conn = Banco.getConexao();
@@ -198,7 +250,6 @@ public class Banco {
 		return id;
 	}
 
-	
 	// ---------------------- INCLUSOES ----------------------	
 	
 	public static Empregado incluirEmpregado(Empregado empregado) throws SQLException {		
@@ -252,7 +303,6 @@ public class Banco {
 		return buscarSolicitacaoPorId(id);	
 	}
 	
-	
 	// ---------------------- ALTERACOES ----------------------
 	
 	public static Empregado alterarEmpregado(String matricula, Empregado empregado) throws SQLException {
@@ -274,7 +324,6 @@ public class Banco {
 		return buscarEmpregadoPorMatricula(matricula);
 	}
 	
-
 	public static Usuario alterarUsuario(String matricula, Usuario usuario) throws Exception {
 		if (usuario == null || matricula == null) return null;
 		Connection conn = Banco.getConexao();
