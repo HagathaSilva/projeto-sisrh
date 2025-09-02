@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -19,14 +18,19 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Java version
-        run: java -version
-
       - name: Build & Test
         run: mvn -B -ntp clean verify
 
-      - name: Publicar JAR
+      - name: List build outputs (debug)
+        run: |
+          pwd
+          ls -la
+          find . -type f \( -name "*.jar" -o -name "*.war" \) -print
+
+      - name: Publicar artefatos Maven
         uses: actions/upload-artifact@v4
         with:
-          name: app-jar
-          path: target/*.jar
+          name: build-artifacts
+          path: |
+            **/target/*.jar
+            **/target/*.war
