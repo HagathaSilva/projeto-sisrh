@@ -1,0 +1,37 @@
+name: Continuous Integration
+
+on:      
+  pull_request:
+    branches: [ main ]             
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build & Test (Maven)
+        run: mvn -B -ntp clean test
+
+      - name: Set up CodeQL
+        uses: github/codeql-action/setup
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
