@@ -1,11 +1,8 @@
 name: Continuous Integration
 
-on:
-  push:
-    branches: [ main ]       
+on:      
   pull_request:
-    branches: [ main ]       
-  workflow_dispatch: {}       
+    branches: [ main ]             
 
 jobs:
   build:
@@ -22,22 +19,19 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build & Test (Maven)
-        run: mvn -B -ntp clean verify
-
-      - name: List build outputs (debug)
-        if: always()
-        run: |
-          pwd
-          ls -la
-          find . -type f \( -name "*.jar" -o -name "*.war" \) -print
-
-      - name: Upload Maven artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
         with:
-          name: build-artifacts
-          path: |
-            **/target/*.jar
-            **/target/*.war
-          if-no-files-found: warn
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build & Test (Maven)
+        run: mvn -B -ntp clean test
+
+      - name: Set up CodeQL
+        uses: github/codeql-action/setup@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
