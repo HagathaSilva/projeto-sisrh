@@ -31,7 +31,8 @@ jobs:
         run: mvn -B -ntp clean test
 
       - name: Set up CodeQL
-        uses: github/codeql-action/setup
+        uses: github/codeql-action/setup@v2
 
       - name: Perform CodeQL Analysis
+
         uses: github/codeql-action/analyze@v2
