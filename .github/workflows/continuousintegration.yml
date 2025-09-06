@@ -1,12 +1,16 @@
 name: Continuous Integration
 
-on:      
+on:
   pull_request:
-    branches: [ main ]             
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write 
 
     steps:
       - name: Check out repository
@@ -19,19 +23,13 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          languages: java
 
       - name: Build & Test (Maven)
         run: mvn -B -ntp clean test
 
-      - name: Set up CodeQL
-        uses: github/codeql-action/setup
-
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
