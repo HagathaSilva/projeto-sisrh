@@ -33,3 +33,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 6
+
+  deploy:
+    needs: deliver
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download WAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-war
+          path: dist
+
+      - name: Display structure of downloaded files
+        run: ls -R dist
+		
