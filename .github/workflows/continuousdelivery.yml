@@ -2,11 +2,12 @@ name: Continuous Delivery
 
 on:
   push:
-    branches: [ main ] 
+    branches: [ main ]
 
 jobs:
   deliver:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -18,11 +19,17 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build the project and create the .war file
-        run: mvn clean package -DskipTests
+      - name: Build the project (.war)
+        run: mvn -B -ntp clean package -DskipTests
 
-      - name: Upload build artifact to GitHub
-        uses: actions/upload-artifact@v2
+      - name: List target (debug)
+        run: ls -lah target
+
+      - name: Upload WAR artifact
+        uses: actions/upload-artifact@v4
         with:
           name: app-war
           path: target/*.war
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
