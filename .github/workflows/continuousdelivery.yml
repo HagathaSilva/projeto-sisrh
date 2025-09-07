@@ -10,8 +10,52 @@ permissions:
   contents: read
 
 jobs:
+  deliver:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build the project (.war)
+        run: mvn -B -ntp clean package -DskipTests
+
+      - name: List target (debug)
+        run: ls -lah target
+
+      - name: Upload WAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-war
+          path: target/*.war
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+
+  deploy:
+    needs: deliver
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download WAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-war
+          path: dist
+
+      - name: Display structure of downloaded files
+        run: ls -R dist
+
   docker:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +72,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
 
       - name: Build and Push
         uses: docker/build-push-action@v6
