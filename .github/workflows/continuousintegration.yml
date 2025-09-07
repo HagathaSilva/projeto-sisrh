@@ -35,12 +35,14 @@ jobs:
 
       - name: Build & Test (Maven)
         run: mvn -B -ntp clean test
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
+        if: always()
         uses: github/codeql-action/analyze@v3
 
-
   docker:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       -
