@@ -59,5 +59,3 @@ jobs:
           push: false
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sisrh:latest
 		
-
-		
