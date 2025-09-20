@@ -21,32 +21,33 @@ import sisrh.dto.Solicitacao;
 
 class SolicitacaoRestTest {
 
-    @Test
-    void listarSolicitacoes_deveRetornarOkComLista() throws Exception {
-        Solicitacao s1 = novaSolicitacao();
-        Solicitacao s2 = novaSolicitacao();
+	@Test
+	void listarSolicitacoes_deveRetornarOkComLista() throws Exception {
+	    Solicitacao s1 = novaSolicitacao();
+	    Solicitacao s2 = novaSolicitacao();
 
-        List<Solicitacao> lista = Arrays.asList(s1, s2);
+	    List<Solicitacao> lista = Arrays.asList(s1, s2);
 
-        try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
-            mocked.when(Banco::listarSolicitacoes).thenReturn(lista);
+	    try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
+	        mocked.when(Banco::listarSolicitacoes).thenReturn(lista);
 
-            SolicitacaoRest resource = new SolicitacaoRest();
-            Response resp = resource.listarSolicitacoes();
+	        SolicitacaoRest resource = new SolicitacaoRest();
+	        Response resp = resource.listarSolicitacoes();
 
-            assertEquals(200, resp.getStatus());
-            Object entity = resp.getEntity();
-            assertNotNull(entity);
+	        assertEquals(200, resp.getStatus());
+	        Object entity = resp.getEntity();
+	        assertNotNull(entity);
 
-            @SuppressWarnings("unchecked")
-            GenericEntity<List<Solicitacao>> ge = (GenericEntity<List<Solicitacao>>) entity;
-            List<Solicitacao> result = ge.getEntity();
+	        assertTrue(entity instanceof List<?>);
+	        @SuppressWarnings("unchecked")
+	        List<Solicitacao> result = (List<Solicitacao>) entity;
 
-            assertEquals(2, result.size());
-            assertSame(lista.get(0), result.get(0));
-            assertSame(lista.get(1), result.get(1));
-        }
-    }
+	        assertEquals(2, result.size());
+	        assertSame(lista.get(0), result.get(0));
+	        assertSame(lista.get(1), result.get(1));
+	    }
+	}
+
 
     @Test
     void obterSolicitacao_quandoExiste_deveRetornarOk() throws Exception {

@@ -17,31 +17,32 @@ import sisrh.dto.Empregado;
 
 class EmpregadoRestTest {
 
-    @Test
-    void listarEmpregados_deveRetornarOkComLista() throws Exception {
-        Empregado e1 = novoEmpregado();
-        Empregado e2 = novoEmpregado();
-        List<Empregado> lista = Arrays.asList(e1, e2);
+	@Test
+	void listarEmpregados_deveRetornarOkComLista() throws Exception {
+	    Empregado e1 = novoEmpregado();
+	    Empregado e2 = novoEmpregado();
+	    List<Empregado> lista = Arrays.asList(e1, e2);
 
-        try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
-            mocked.when(Banco::listarEmpregados).thenReturn(lista);
+	    try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
+	        mocked.when(Banco::listarEmpregados).thenReturn(lista);
 
-            EmpregadoRest resource = new EmpregadoRest();
-            Response resp = resource.listarEmpregados();
+	        EmpregadoRest resource = new EmpregadoRest();
+	        Response resp = resource.listarEmpregados();
 
-            assertEquals(200, resp.getStatus());
-            Object entity = resp.getEntity();
-            assertNotNull(entity);
+	        assertEquals(200, resp.getStatus());
+	        Object entity = resp.getEntity();
+	        assertNotNull(entity);
 
-            @SuppressWarnings("unchecked")
-            GenericEntity<List<Empregado>> ge = (GenericEntity<List<Empregado>>) entity;
-            List<Empregado> result = ge.getEntity();
+	        assertTrue(entity instanceof List<?>);
+	        @SuppressWarnings("unchecked")
+	        List<Empregado> result = (List<Empregado>) entity;
 
-            assertEquals(2, result.size());
-            assertSame(lista.get(0), result.get(0));
-            assertSame(lista.get(1), result.get(1));
-        }
-    }
+	        assertEquals(2, result.size());
+	        assertSame(lista.get(0), result.get(0));
+	        assertSame(lista.get(1), result.get(1));
+	    }
+	}
+
 
     @Test
     void obterEmpregado_quandoExiste_deveRetornarOk() throws Exception {
