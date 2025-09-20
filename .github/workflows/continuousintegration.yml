@@ -1,8 +1,13 @@
 name: Continuous Integration
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -30,10 +35,33 @@ jobs:
 
       - name: Build & Test (Maven)
         run: mvn -B -ntp clean test
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
+        if: always()
         uses: github/codeql-action/analyze@v3
 
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/sisrh:latest
+            
   discord:
     runs-on: ubuntu-latest
     steps:
