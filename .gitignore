@@ -1,0 +1,26 @@
+# Maven
+target/
+**/pom.properties
+**/maven-archiver/
+**/maven-status/
+
+# Java
+*.class
+*.log
+hs_err_pid*
+
+# Eclipse
+.project
+.classpath
+.settings/
+.metadata/
+
+# IntelliJ (se alguém usar)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# SO
+.DS_Store
+Thumbs.db

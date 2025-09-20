@@ -61,3 +61,13 @@ jobs:
           push: false
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sisrh:latest
+            
+  discord:
+    name: Discord Notify
+    runs-on: ubuntu-latest
+    needs: [build, docker]
+    if: always()
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
