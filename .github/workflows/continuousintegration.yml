@@ -33,16 +33,65 @@ jobs:
         with:
           languages: java
 
-      - name: Build & Test (Maven)
-        run: mvn -B -ntp clean test
-        continue-on-error: true
+      - name: Build (compile/package only)
+        run: mvn -B -ntp -DskipTests package
 
       - name: Perform CodeQL Analysis
         if: always()
         uses: github/codeql-action/analyze@v3
 
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Run unit tests
+        run: mvn -B -ntp -Dsurefire.printSummary=true -DtrimStackTrace=false -DskipITs test
+
+      - name: Print Surefire reports
+        if: always()
+        run: |
+          echo "=== Surefire TXT summaries ==="
+          if ls target/surefire-reports/*.txt >/dev/null 2>&1; then
+            for f in target/surefire-reports/*.txt; do
+              echo "----- $f"
+              sed -n '1,200p' "$f"
+            done
+          else
+            echo "No TXT summaries found."
+          fi
+
+          echo "=== Surefire dumpstreams (if any) ==="
+          if ls target/surefire-reports/*.dumpstream >/dev/null 2>&1; then
+            for f in target/surefire-reports/*.dumpstream; do
+              echo "----- $f"
+              sed -n '1,200p' "$f"
+            done
+          else
+            echo "No dumpstreams found."
+          fi
+
+      - name: Upload Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/**
+          if-no-files-found: warn
+          retention-days: 7
+
   docker:
-    needs: build
+    needs: [build, unit-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,11 +110,11 @@ jobs:
           push: false
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/sisrh:latest
-            
+
   discord:
     name: Discord Notify
     runs-on: ubuntu-latest
-    needs: [build, docker]
+    needs: [build, unit-tests, docker]
     if: always()
     steps:
       - uses: sarisia/actions-status-discord@v1
