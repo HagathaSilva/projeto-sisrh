@@ -22,7 +22,7 @@ import sisrh.dto.Solicitacao;
 class SolicitacaoRestTest {
 
 	@Test
-	void listarSolicitacoes_deveRetornarOkComLista() throws Exception {
+	void listarSolicitacoesTeste() throws Exception {
 	    Solicitacao s1 = novaSolicitacao();
 	    Solicitacao s2 = novaSolicitacao();
 
@@ -50,7 +50,7 @@ class SolicitacaoRestTest {
 
 
     @Test
-    void obterSolicitacao_quandoExiste_deveRetornarOk() throws Exception {
+    void obterSolicitacao_quandoExiste_Teste() throws Exception {
         Solicitacao s = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -66,7 +66,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void obterSolicitacao_quandoNaoExiste_deveRetornar404() throws Exception {
+    void obterSolicitacao_quandoNaoExiste_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarSolicitacaoPorId(999))
                   .thenReturn(null);
@@ -80,7 +80,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void obterSolicitacao_quandoErro_deveRetornar500() throws Exception {
+    void obterSolicitacao_quandoErro_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarSolicitacaoPorId(13))
                   .thenThrow(new RuntimeException("boom"));
@@ -96,7 +96,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void incluirSolicitacao_ok_deveRetornar200() {
+    void incluirSolicitacao_quandoOk_Teste() {
         Solicitacao input = novaSolicitacao();
         Solicitacao salvo = novaSolicitacao();
 
@@ -112,7 +112,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void incluirSolicitacao_quandoErro_deveRetornar500() {
+    void incluirSolicitacao_quandoErro_Teste() {
         Solicitacao input = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -128,7 +128,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void alterarSolicitacao_quandoNaoExiste_deveRetornar404() throws Exception {
+    void alterarSolicitacao_quandoNaoExiste_Teste() throws Exception {
         Solicitacao nova = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -144,7 +144,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void alterarSolicitacao_quandoExiste_deveRetornar200() throws Exception {
+    void alterarSolicitacao_quandoExiste_Teste() throws Exception {
         Solicitacao existente = novaSolicitacao();
         Solicitacao alterada = novaSolicitacao();
 
@@ -163,7 +163,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void alterarSolicitacao_quandoErro_deveRetornar500() throws Exception {
+    void alterarSolicitacao_quandoErro_Teste() throws Exception {
         Solicitacao existente = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -181,7 +181,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void excluirSolicitacao_quandoNaoExiste_deveRetornar404() throws Exception {
+    void excluirSolicitacao_quandoNaoExiste_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarSolicitacaoPorId(80))
                   .thenReturn(null);
@@ -195,7 +195,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void excluirSolicitacao_quandoExiste_deveRetornar200() throws Exception {
+    void excluirSolicitacao_quandoExiste_Teste() throws Exception {
         Solicitacao existente = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -216,7 +216,7 @@ class SolicitacaoRestTest {
     }
 
     @Test
-    void excluirSolicitacao_quandoErro_deveRetornar500() throws Exception {
+    void excluirSolicitacao_quandoErro_Teste() throws Exception {
         Solicitacao existente = novaSolicitacao();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {

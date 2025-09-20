@@ -18,7 +18,7 @@ import sisrh.dto.Empregado;
 class EmpregadoRestTest {
 
 	@Test
-	void listarEmpregados_deveRetornarOkComLista() throws Exception {
+	void listarEmpregadosTeste() throws Exception {
 	    Empregado e1 = novoEmpregado();
 	    Empregado e2 = novoEmpregado();
 	    List<Empregado> lista = Arrays.asList(e1, e2);
@@ -45,7 +45,7 @@ class EmpregadoRestTest {
 
 
     @Test
-    void obterEmpregado_quandoExiste_deveRetornarOk() throws Exception {
+    void obterEmpregado_quandoExiste_Teste() throws Exception {
         Empregado e = novoEmpregado();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -61,7 +61,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void obterEmpregado_quandoNaoExiste_deveRetornar404() throws Exception {
+    void obterEmpregado_quandoNaoExiste_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarEmpregadoPorMatricula("999"))
                   .thenReturn(null);
@@ -75,7 +75,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void obterEmpregado_quandoLancaExcecao_deveRetornar500() throws Exception {
+    void obterEmpregado_quandoLancaExcecao_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarEmpregadoPorMatricula("err"))
                   .thenThrow(new RuntimeException("boom"));
@@ -91,7 +91,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void incluirEmpregado_ok_deveRetornar200() {
+    void incluirEmpregado_quandoOk_Teste() {
         Empregado input = novoEmpregado();
         Empregado salvo = novoEmpregado();
 
@@ -107,7 +107,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void incluirEmpregado_quandoErro_deveRetornar500() {
+    void incluirEmpregado_quandoErro_Teste() {
         Empregado input = novoEmpregado();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -123,7 +123,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void alterarEmpregado_quandoNaoExiste_deveRetornar404() throws Exception {
+    void alterarEmpregado_quandoNaoExiste_Teste() throws Exception {
         Empregado novo = novoEmpregado();
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarEmpregadoPorMatricula("456"))
@@ -138,7 +138,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void alterarEmpregado_quandoExiste_deveRetornar200() throws Exception {
+    void alterarEmpregado_quandoExiste_Teste() throws Exception {
         Empregado novo = novoEmpregado();
         Empregado alterado = novoEmpregado();
 
@@ -157,7 +157,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void alterarEmpregado_quandoErro_deveRetornar500() throws Exception {
+    void alterarEmpregado_quandoErro_Teste() throws Exception {
         Empregado novo = novoEmpregado();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -175,7 +175,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void excluirEmpregado_quandoNaoExiste_deveRetornar404() throws Exception {
+    void excluirEmpregado_quandoNaoExiste_Teste() throws Exception {
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
             mocked.when(() -> Banco.buscarEmpregadoPorMatricula("777"))
                   .thenReturn(null);
@@ -189,7 +189,7 @@ class EmpregadoRestTest {
     }
 
     @Test
-    void excluirEmpregado_quandoExiste_deveRetornar200() throws Exception {
+    void excluirEmpregado_quandoExiste_Teste() throws Exception {
         Empregado existente = novoEmpregado();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
@@ -211,7 +211,7 @@ class EmpregadoRestTest {
 
 
     @Test
-    void excluirEmpregado_quandoErro_deveRetornar500() throws Exception {
+    void excluirEmpregado_quandoErro_Teste() throws Exception {
         Empregado existente = novoEmpregado();
 
         try (MockedStatic<Banco> mocked = mockStatic(Banco.class)) {
