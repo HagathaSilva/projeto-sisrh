@@ -56,7 +56,39 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        run: mvn -B -ntp -DskipITs test
+        run: mvn -B -ntp -Dsurefire.printSummary=true -DtrimStackTrace=false -DskipITs test
+
+      - name: Print Surefire reports
+        if: always()
+        run: |
+          echo "=== Surefire TXT summaries ==="
+          if ls target/surefire-reports/*.txt >/dev/null 2>&1; then
+            for f in target/surefire-reports/*.txt; do
+              echo "----- $f"
+              sed -n '1,200p' "$f"
+            done
+          else
+            echo "No TXT summaries found."
+          fi
+
+          echo "=== Surefire dumpstreams (if any) ==="
+          if ls target/surefire-reports/*.dumpstream >/dev/null 2>&1; then
+            for f in target/surefire-reports/*.dumpstream; do
+              echo "----- $f"
+              sed -n '1,200p' "$f"
+            done
+          else
+            echo "No dumpstreams found."
+          fi
+
+      - name: Upload Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/**
+          if-no-files-found: warn
+          retention-days: 7
 
   docker:
     needs: [build, unit-tests]
