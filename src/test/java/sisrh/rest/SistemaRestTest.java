@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class SistemaRestTest {
 
     @Test
-    void ping_deveRetornarPongComUUID() {
+    void ping_teste() {
         SistemaRest resource = new SistemaRest();
 
         Response resp = resource.ping();
@@ -28,7 +28,7 @@ class SistemaRestTest {
     }
 
     @Test
-    void datahora_deveRetornarDataHoraNoPadrao() {
+    void datahora_teste() {
         SistemaRest resource = new SistemaRest();
 
         Response resp = resource.datahora();
